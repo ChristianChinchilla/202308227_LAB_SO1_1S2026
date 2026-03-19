@@ -68,7 +68,7 @@ sudo docker push localhost:5000/api1-202308227:latest
 Para el despliegue no se utilizó Docker, sino directamente containerd a través de su cliente de consola ctr, descargando las imágenes en texto plano desde el registro Zot y ejecutándolas en la red del host (--net-host).
 
 ``` bash
-# Comando utilizado en los nodos para descargar y ejecutar
+#comando utilizado en los nodos para descargar y ejecutar
 sudo ctr images pull --plain-http 192.168.122.147:5000/api1-202308227:latest
 sudo ctr run -d --net-host 192.168.122.147:5000/api1-202308227:latest api1
 ``` 
