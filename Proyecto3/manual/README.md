@@ -194,7 +194,6 @@ Estado de la Cola: Monitoreo del flujo de mensajes dentro de RabbitMQ.
 
 
 
-
 ## 11. Conclusiones
 
 Eficiencia de gRPC: El uso de comunicación binaria permitió que el microservicio de Go procesara los datos con un overhead significativamente menor que si se hubiese utilizado REST tradicional.  
@@ -202,3 +201,26 @@ Eficiencia de gRPC: El uso de comunicación binaria permitió que el microservic
 Escalabilidad Horizontal: Gracias a Kubernetes, el sistema es capaz de levantar nuevas réplicas de la API de Rust automáticamente si el tráfico de Locust supera los límites establecidos.  
 Resiliencia Asíncrona: La integración de RabbitMQ garantizó que ningún reporte se perdiera, incluso cuando la base de datos Valkey experimentaba ráfagas de escritura masiva.  
 Cumplimiento de Requerimientos: Se validó exitosamente la arquitectura para carnet impar, integrando satisfactoriamente Rust, Go y sistemas de mensajería asíncrona dentro de una infraestructura de nube real.
+
+## 12. Preguntas Frecuentes y Resolución de Problemas (FAQ)
+
+### ¿Por qué se utiliza un entorno de Fedora externo para Locust?
+Para simular un escenario real de red donde el tráfico proviene de una red externa al clúster de Kubernetes. Esto permite validar que el `LoadBalancer` de Google Cloud está configurado correctamente y permite el tráfico entrante de forma segura[cite: 2].
+
+### ¿Qué sucede si el microservicio de Go deja de funcionar?
+Gracias a la implementación de **RabbitMQ**, los mensajes no se pierden inmediatamente. Se quedan acumulados en la cola `reportes_guerra` hasta que el servicio de Go (consumidor) se restablezca y procese los datos pendientes.
+
+### ¿Por qué mis gráficas de Grafana aparecen vacías (Empty Array)?
+Esto suele ocurrir por dos razones principales:
+1. **Fallo de Conectividad:** El pod de Go no puede alcanzar el servicio de Valkey debido a una mala configuración del host en el archivo `valkey-deploy.yaml`.
+2. **Entornos Virtuales:** El uso de entornos virtuales (`venv`) en el generador de tráfico puede causar problemas de visibilidad de archivos o scripts, impidiendo que el dato salga hacia la nube.
+
+## 13. Análisis de Rendimiento y Resultados de Validación
+
+Bajo las condiciones de prueba (50 usuarios concurrentes), el sistema mostró los siguientes comportamientos:
+
+* **Estabilidad del Nodo:** El clúster de GKE manejó la carga distribuyendo los pods de Rust y Go eficientemente.
+* **Latencia de gRPC:** Se observó que la comunicación binaria redujo el tiempo de respuesta en comparación con una arquitectura puramente REST, cumpliendo con el estándar de carnet impar.
+* **Persistencia:** Se validó que el 100% de los datos procesados por Go fueran legibles desde el dashboard de Grafana conectándose a Valkey.
+
+---
