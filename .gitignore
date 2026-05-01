@@ -1,6 +1,0 @@
-target/
-api-go/api-go-bin
-venv/
-__pycache__/
-.DS_Store
-gopath/
