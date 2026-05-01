@@ -1,0 +1,33 @@
+[package]
+name = "api-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Servidor Web (Recibe datos de Locust)
+actix-web = "4.4"
+
+# Manejo de JSON
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Restricciones para compatibilidad con Rust 1.80 y evitar Edition 2024
+indexmap = "<2.6"
+hashbrown = "<0.15"
+
+# Fechas y Tiempos
+chrono = { version = "0.4", features = ["serde"] }
+
+# gRPC (Para hablar con el servidor de Go)
+tonic = "0.10"
+prost = "0.12"
+
+# Manejo de procesos asíncronos
+tokio = { version = "1", features = ["full"] }
+
+# Base de Datos (Por si la necesitas luego, con macros activadas)
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "mysql", "chrono", "macros"] }
+
+[build-dependencies]
+# Esto es vital para compilar el archivo .proto
+tonic-build = "0.10"
